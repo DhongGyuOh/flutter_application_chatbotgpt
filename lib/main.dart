@@ -4,7 +4,9 @@ import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_chatbotgpt/models/message_model.dart';
 
-final List<MessageModel> _messages = [MessageModel(true, 'Hi')];
+final List<MessageModel> _messages = [
+  MessageModel(true, 'chat_gpt_sdk 연동완료(http 200)')
+];
 UnmodifiableListView<MessageModel> messages = UnmodifiableListView(_messages);
 final txtMessage = TextEditingController();
 void main() {
@@ -20,7 +22,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final openAI = OpenAI.instance.build(
-      token: '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',
+      token: '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',
       baseOption: HttpSetup(receiveTimeout: const Duration(seconds: 100)),
       isLog: true);
 
@@ -45,21 +47,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('영화예매 ChatGPT'),
+          title: const Text('ChatGPT'),
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
