@@ -4,7 +4,6 @@ import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_chatbotgpt/models/message_model.dart';
 
-// final messages = UnmodifiableListView<MessageModel>([MessageModel(true, 'Hi')]);
 final List<MessageModel> _messages = [MessageModel(true, 'Hi')];
 UnmodifiableListView<MessageModel> messages = UnmodifiableListView(_messages);
 final txtMessage = TextEditingController();
@@ -21,19 +20,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final openAI = OpenAI.instance.build(
-      token: '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',
-      baseOption: HttpSetup(receiveTimeout: const Duration(seconds: 20)),
+      token: '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',
+      baseOption: HttpSetup(receiveTimeout: const Duration(seconds: 100)),
       isLog: true);
-
-  // void sendMessage(String message) async {
-  //   final requests = CompleteText(
-  //       prompt: message, model: Model.textDavinci2, maxTokens: 10000);
-  //   final res = await openAI.onCompletion(request: requests);
-  //   setState(() {
-  //     _messages.add(MessageModel(true, res?.choices.last.text ?? "Error"));
-  //     messages = UnmodifiableListView(_messages);
-  //   });
-  // }
 
   void sendMessage(String message) async {
     const maxTokens = 2048;
@@ -70,29 +59,35 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('ChatGPT'),
+          title: const Text('영화예매 ChatGPT'),
         ),
-        body: Stack(children: [
-          Column(
-            children: [
-              Expanded(
-                  flex: 1,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    itemCount: messages.length,
-                    physics: const BouncingScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return messages[index].isBot
-                          ? BotCard(index: index)
-                          : UserCard(index: index);
-                    },
-                  )),
-            ],
-          ),
-          SendMessage(
-            sendMessage: () => sendMessage(txtMessage.text),
-          )
-        ]),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Stack(children: [
+            Column(
+              children: [
+                Expanded(
+                    flex: 1,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      itemCount: messages.length,
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return messages[index].isBot
+                            ? BotCard(index: index)
+                            : UserCard(index: index);
+                      },
+                    )),
+                const SizedBox(
+                  height: 45,
+                )
+              ],
+            ),
+            SendMessage(
+              sendMessage: () => sendMessage(txtMessage.text),
+            )
+          ]),
+        ),
       ),
     );
   }
@@ -141,6 +136,7 @@ class SendMessage extends StatelessWidget {
   }
 }
 
+//유저 카드 위젯
 class UserCard extends StatelessWidget {
   final int index;
   const UserCard({
@@ -162,7 +158,7 @@ class UserCard extends StatelessWidget {
                   size: 30,
                 ),
               ),
-              Text('동규')
+              Text('구굴러')
             ],
           ),
         ),
@@ -172,20 +168,20 @@ class UserCard extends StatelessWidget {
           child: Column(
             children: [
               Container(
+                  padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: const BorderRadius.only(
-                        bottomRight: Radius.circular(20),
-                      ),
+                      color: Colors.amber,
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
                       boxShadow: [
                         BoxShadow(
-                            color: Colors.grey.withOpacity(.12),
-                            offset: const Offset(-30, 2),
+                            color: Colors.black.withOpacity(.12),
+                            offset: const Offset(-1, 1),
                             blurRadius: 2)
                       ]),
                   child: Text(
                     messages[index].message,
-                    maxLines: 12,
+                    softWrap: true,
+                    style: const TextStyle(fontWeight: FontWeight.w500),
                   ))
             ],
           ),
@@ -195,6 +191,7 @@ class UserCard extends StatelessWidget {
   }
 }
 
+//챗봇 카드 위젯
 class BotCard extends StatelessWidget {
   final int index;
   const BotCard({
@@ -205,26 +202,43 @@ class BotCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Column(
+        const Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               child: Icon(
                 Icons.person,
                 size: 35,
+                color: Colors.cyan,
               ),
             ),
-            const Text('전자두뇌상혁'),
-            SizedBox(
-              width: 300,
-              height: 500,
-              child: Text(
-                messages[index].message,
-              ),
-            ),
+            Text('챗 봇'),
           ],
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+          ),
+          width: 300,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.all(Radius.circular(15)),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withOpacity(0.12),
+                    offset: const Offset(2, 2))
+              ]),
+          child: Transform.translate(
+            offset: const Offset(0, -15),
+            child: Text(
+              messages[index].message,
+              softWrap: true,
+            ),
+          ),
         ),
       ],
     );
