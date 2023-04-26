@@ -22,7 +22,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final openAI = OpenAI.instance.build(
-      token: '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',
+      token: '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',
       baseOption: HttpSetup(receiveTimeout: const Duration(seconds: 100)),
       isLog: true);
 
@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
               children: [
                 Expanded(
                     flex: 1,
-                    child: ListView.builder(
+                    child: ListView.separated(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       itemCount: messages.length,
                       physics: const BouncingScrollPhysics(),
@@ -69,6 +69,9 @@ class _MyAppState extends State<MyApp> {
                             ? BotCard(index: index)
                             : UserCard(index: index);
                       },
+                      separatorBuilder: (context, index) => const SizedBox(
+                        height: 30,
+                      ),
                     )),
                 const SizedBox(
                   height: 45,
@@ -101,6 +104,11 @@ class SendMessage extends StatelessWidget {
         width: double.maxFinite,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: TextField(
+          onSubmitted: (value) {
+            sendMessage();
+            _messages.add(MessageModel(false, txtMessage.text.toString()));
+            txtMessage.clear();
+          },
           controller: txtMessage,
           decoration: InputDecoration(
               suffixIcon: GestureDetector(
@@ -115,7 +123,7 @@ class SendMessage extends StatelessWidget {
                   color: Colors.blue,
                 ),
               ),
-              hintText: '...A',
+              hintText: '...입력',
               disabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
                   borderRadius: BorderRadius.all(Radius.circular(20))),
@@ -138,46 +146,42 @@ class UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        const Align(
-          alignment: Alignment.centerRight,
-          child: Column(
-            children: [
-              CircleAvatar(
-                child: Icon(
-                  Icons.hail,
-                  size: 30,
-                ),
-              ),
-              Text('구굴러')
-            ],
-          ),
+        Transform.translate(
+          offset: const Offset(0, 10),
+          child: Container(
+              width: 250,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  color: Colors.amber,
+                  borderRadius: const BorderRadius.all(Radius.circular(10)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(.12),
+                        offset: const Offset(-1, 1),
+                        blurRadius: 2)
+                  ]),
+              child: Text(
+                messages[index].message,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+                softWrap: true,
+              )),
         ),
-        Positioned(
-          right: 50,
-          bottom: 15,
-          child: Column(
-            children: [
-              Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                      color: Colors.amber,
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(.12),
-                            offset: const Offset(-1, 1),
-                            blurRadius: 2)
-                      ]),
-                  child: Text(
-                    messages[index].message,
-                    softWrap: true,
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                  ))
-            ],
-          ),
-        )
+        const Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            CircleAvatar(
+              child: Icon(
+                Icons.hail,
+                size: 30,
+              ),
+            ),
+            Text('구굴러'),
+          ],
+        ),
       ],
     );
   }
@@ -215,7 +219,7 @@ class BotCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(
             horizontal: 10,
           ),
-          width: 300,
+          width: 250,
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.all(Radius.circular(15)),
